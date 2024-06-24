@@ -48,8 +48,8 @@ class MainWindow(QMainWindow):
 
         self.other_buttons = {
             "Spotify": "https://download.scdn.co/SpotifySetup.exe",
-            "BoosterX": "https://s3.timeweb.com/431b9470-boosterxdownload/BoosterX.exe",
-            "Google": 'https://www.google.com/intl/ru/chrome/next-steps.html?statcb=1&installdataindex=empty&defaultbrowser=0#',
+            "BoosterX": "https://download.boosterx.org/BoosterX.exe",
+            "Google": 'https://www.google.com/intl/ru/chrome/next-steps.html?statcb=1&installdataindex=empty&defaultbrowser=0',
             "Opera GX": 'https://www.opera.com/ru/computer/thanks?ni=eapgx&os=windows'
         }
 
