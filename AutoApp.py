@@ -21,10 +21,12 @@ class MainWindow(QMainWindow):
         self.programming_tab = QWidget()
         self.games_tab = QWidget()
         self.other_tab = QWidget()
+        self.drivers_tab = QWidget()
 
         self.tabs.addTab(self.programming_tab, "Программирование")
         self.tabs.addTab(self.games_tab, "Игры")
         self.tabs.addTab(self.other_tab, "Другое")
+        self.tabs.addTab(self.drivers_tab, "Драйвера")
 
         # Создаем лэйаут для главного виджета
         main_layout = QVBoxLayout()
@@ -53,6 +55,10 @@ class MainWindow(QMainWindow):
             "Opera GX": 'https://www.opera.com/ru/computer/thanks?ni=eapgx&os=windows'
         }
 
+        self.drivers_buttons = {
+            "NVIDIA": "https://www.nvidia.com/Download/index.aspx",
+            "AMD": "https://www.amd.com/en/support"
+        }
 
         # Создаем кнопки для вкладки "Программирование"
         self.create_buttons(self.programming_tab, self.programming_buttons)
@@ -60,6 +66,8 @@ class MainWindow(QMainWindow):
         self.create_buttons(self.games_tab, self.games_buttons)
         # Создаем кнопки для вкладки "Другое"
         self.create_buttons(self.other_tab, self.other_buttons)
+        # Создаем кнопки для вкладки "Драйвера"
+        self.create_buttons(self.drivers_tab, self.drivers_buttons)
 
     def create_buttons(self, tab, buttons):
         layout = QVBoxLayout()
@@ -92,11 +100,3 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
-
-
-
-
-'''
-Сделал JKYBOG Пожалуйста указывайте меня если будете где скидывать кому-то) 
-С любовью,апдейты будут ожидайте
-'''
