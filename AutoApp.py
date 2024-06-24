@@ -1,7 +1,7 @@
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QMessageBox, QTabWidget, QInputDialog
-
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QMessageBox, QTabWidget
+import json
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Auto Apps")
 
         # Устанавливаем размер окна
-        self.resize(400, 200)
+        self.resize(400,20)
 
         # Создаем главный виджет и табуляцию
         main_widget = QWidget()
@@ -34,31 +34,10 @@ class MainWindow(QMainWindow):
         main_widget.setLayout(main_layout)
 
         # Определяем кнопки для каждой вкладки
-        self.programming_buttons = {
-            "PyCharm 2024.1.3": "https://download.jetbrains.com/python/pycharm-community-2024.1.3.exe?_gl=1*1d9ckfr*_gcl_au*NDkyNzAyNjE3LjE3MTg5ODczNzc.*_ga*MTk5NDE5NDg0Ni4xNzE4OTg3MzUx*_ga_9J976DJZ68*MTcxOTE3OTgzNC4yLjEuMTcxOTE3OTg2OC4yNi4wLjA.&_ga=2.3583728.1762200236.1719179835-1994194846.1718987351",
-            "WebStorm 2024.1.5": "https://download.jetbrains.com/webstorm/WebStorm-2024.1.5.exe?_gl=1*uafgyl*_gcl_au*NDkyNzAyNjE3LjE3MTg5ODczNzc.*_ga*MTk5NDE5NDg0Ni4xNzE4OTg3MzUx*_ga_9J976DJZ68*MTcxOTE3OTgzNC4yLjEuMTcxOTE3OTг2OC4yNi4wLjA.&_ga=2.209184594.1762200236.1719179835-1994194846.1718987351",
-            "VS Code 1.90": "https://code.visualstudio.com/Download",
-            "Git 2.45.2": "https://github.com/git-for-windows/git/releases/download/v2.45.2.windows.1/Git-2.45.2-64-bit.exe"
-        }
-
-        self.games_buttons = {
-            "Discord": "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64",
-            "Steam": "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe",
-            "Epic Games": "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi",
-            "Rage MP": "https://rage.mp/ru#"
-        }
-
-        self.other_buttons = {
-            "Spotify": "https://download.scdn.co/SpotifySetup.exe",
-            "BoosterX": "https://download.boosterx.org/BoosterX.exe",
-            "Google": 'https://www.google.com/intl/ru/chrome/next-steps.html?statcb=1&installdataindex=empty&defaultbrowser=0',
-            "Opera GX": 'https://www.opera.com/ru/computer/thanks?ni=eapgx&os=windows'
-        }
-
-        self.drivers_buttons = {
-            "NVIDIA": "https://www.nvidia.com/Download/index.aspx",
-            "AMD": "https://www.amd.com/en/support"
-        }
+        self.programming_buttons = self.load_buttons('programming')
+        self.games_buttons = self.load_buttons('games')
+        self.other_buttons = self.load_buttons('other')
+        self.drivers_buttons = self.load_buttons('drivers')
 
         # Создаем кнопки для вкладки "Программирование"
         self.create_buttons(self.programming_tab, self.programming_buttons)
@@ -69,46 +48,26 @@ class MainWindow(QMainWindow):
         # Создаем кнопки для вкладки "Драйвера"
         self.create_buttons(self.drivers_tab, self.drivers_buttons)
 
+    def load_buttons(self, category):
+        try:
+            with open('config.json', 'r') as file:
+                data = json.load(file)
+                return data.get(category, {})
+        except FileNotFoundError:
+            QMessageBox.critical(self, "Ошибка", "Не найден файл конфигурации 'config.json'.")
+            return {}
+
     def create_buttons(self, tab, buttons):
         layout = QVBoxLayout()
         for name, url in buttons.items():
             button = QPushButton(name)
-            if name == "NVIDIA":
-                button.clicked.connect(self.nvidia_clicked)
-            else:
-                button.clicked.connect(lambda checked, url=url: self.open_url(url))
+            button.clicked.connect(lambda checked, name=name, url=url: self.open_url(name, url))
             layout.addWidget(button)
         tab.setLayout(layout)
 
-    def nvidia_clicked(self):
-        series, ok = QInputDialog.getItem(self, "Выбор серии видеокарты", "Выберите серию видеокарты NVIDIA:",
-                                          ["GeForce 30 Series", "GeForce 20 Series", "GeForce 16 Series", "GeForce 10 Series"])
-        if ok and series:
-            series_urls = {
-                "GeForce 30 Series": "https://www.nvidia.com/en-us/geforce/30-series/",
-                "GeForce 20 Series": "https://www.nvidia.com/en-us/geforce/20-series/",
-                "GeForce 16 Series": "https://www.nvidia.com/en-us/geforce/16-series/",
-                "GeForce 10 Series": "https://www.nvidia.com/en-us/geforce/10-series/"
-            }
-            url = series_urls.get(series)
-            if url:
-                self.open_url(url)
-
-    def open_url(self, url):
+    def open_url(self, name, url):
         webbrowser.open(url)
-        QMessageBox.information(self, "Информация", f"Начинаем загрузку: {url.split('/')[-1]}")
-
-    def button_clicked(self):
-        button = self.sender()
-        button_name = button.text()
-        url = self.button_actions.get(button_name)
-
-        if url:
-            webbrowser.open(url)
-            QMessageBox.information(self, "Информация", f"Начинаем загрузку: {button_name}")
-        else:
-            QMessageBox.warning(self, "Ошибка", f"Не найдена ссылка для: {button_name}")
-
+        QMessageBox.information(self, "Информация", f"Начинаем загрузку: {name}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -117,9 +76,3 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
-
-'''
-Сделал JKYBOG Пожалуйста указывайте меня если будете где скидывать кому-то) 
-С любовью,апдейты будут ожидайте
-'''
-
