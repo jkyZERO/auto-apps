@@ -1,6 +1,6 @@
 import sys
 import webbrowser
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QMessageBox, QTabWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QMessageBox, QTabWidget, QInputDialog
 
 
 class MainWindow(QMainWindow):
@@ -73,9 +73,26 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         for name, url in buttons.items():
             button = QPushButton(name)
-            button.clicked.connect(lambda checked, url=url: self.open_url(url))
+            if name == "NVIDIA":
+                button.clicked.connect(self.nvidia_clicked)
+            else:
+                button.clicked.connect(lambda checked, url=url: self.open_url(url))
             layout.addWidget(button)
         tab.setLayout(layout)
+
+    def nvidia_clicked(self):
+        series, ok = QInputDialog.getItem(self, "Выбор серии видеокарты", "Выберите серию видеокарты NVIDIA:",
+                                          ["GeForce 30 Series", "GeForce 20 Series", "GeForce 16 Series", "GeForce 10 Series"])
+        if ok and series:
+            series_urls = {
+                "GeForce 30 Series": "https://www.nvidia.com/en-us/geforce/30-series/",
+                "GeForce 20 Series": "https://www.nvidia.com/en-us/geforce/20-series/",
+                "GeForce 16 Series": "https://www.nvidia.com/en-us/geforce/16-series/",
+                "GeForce 10 Series": "https://www.nvidia.com/en-us/geforce/10-series/"
+            }
+            url = series_urls.get(series)
+            if url:
+                self.open_url(url)
 
     def open_url(self, url):
         webbrowser.open(url)
@@ -100,3 +117,9 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
+
+'''
+Сделал JKYBOG Пожалуйста указывайте меня если будете где скидывать кому-то) 
+С любовью,апдейты будут ожидайте
+'''
+
